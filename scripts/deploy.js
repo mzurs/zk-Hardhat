@@ -7,8 +7,9 @@ const fs = require("fs");
 async function main() {
   const ZKP = await hre.ethers.getContractFactory("Verifier");
   const zkpverifier = await ZKP.deploy();
-
-  await zkpverifier.deployed();
+  const Profiles = await hre.ethers.getContractFactory("Profiles");
+  const profiles = await Profiles.deploy();
+  await profiles.deployed();
 
   // console.log(zkpverifier.address)
   const zokratesProvider = await initialize();
@@ -45,6 +46,15 @@ async function main() {
 
   const result = await zkpverifier.verifyTx(proof.proof, proof.inputs);
   console.log(`Result: ${result}`);
+
+  if (result){
+    await profiles.createProfile("0x71bE63f3384f5fb98995898A86B02Fb2426c5788",String(result))
+    const id=await profiles.getUserId("0x71bE63f3384f5fb98995898A86B02Fb2426c5788");
+    console.log(id);
+  }
+  else{
+    console.log("User not Verified");
+  }
 }
 
 main().catch((error) => {
