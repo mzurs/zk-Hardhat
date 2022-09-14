@@ -3,6 +3,7 @@ const { initialize } = require("zokrates-js");
 const path = require("path");
 const keyPair = require("../scripts/zokrates/generated/zk_setup.json");
 const fs = require("fs");
+const { error } = require("console");
 
 async function main() {
   const ZKP = await hre.ethers.getContractFactory("Verifier");
@@ -37,22 +38,30 @@ async function main() {
     "0",
     "164345617366728272006170673450623848882",
     "281430901492732617543158812730993744472",
-    false,
+    true,
   ]);
-
+  // console.log(`Witness-> ${witness} \n Output-> ${output}`);
   const proof = zokratesProvider.generateProof(program, witness, keyPair.pk);
 
   // console.log(proof)
 
   const result = await zkpverifier.verifyTx(proof.proof, proof.inputs);
-  console.log(`Result: ${result}`);
+  // console.log(`Result: ${result}`);
 
-  if (result){
-    await profiles.createProfile("0x71bE63f3384f5fb98995898A86B02Fb2426c5788",String(result))
-    const id=await profiles.getUserId("0x71bE63f3384f5fb98995898A86B02Fb2426c5788");
-    console.log(id);
-  }
-  else{
+  if (result) {
+    await profiles.createProfile(
+      "0x71bE63f3384f5fb98995898A86B02Fb2426c5788",
+      String(result)
+    );
+    try {
+      const id = await profiles.getUserId(
+        "0x71bE63f3384f5fb98995898A86B02Fb2426c5788"
+      );
+      console.log(id);
+    } catch (error) {
+      console.error("User not found",error.message);
+    }
+  } else {
     console.log("User not Verified");
   }
 }

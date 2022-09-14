@@ -6,7 +6,7 @@ const main = async () => {
     .readFileSync(path.join(__dirname, "..", "src", "zk_users.zok"))
     .toString();
   const zokratesProvider = await initialize();
-  console.log(zk);
+  // console.log(zk);
   // console.log(zk)
   const artifacts = zokratesProvider.compile(zk);
 
